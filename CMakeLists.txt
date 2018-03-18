@@ -236,6 +236,8 @@ if (UNIX AND NOT APPLE)
     find_package(OpenCV)
   endif (OpenCV_CONFIG_FILE)
 
+  find_package(Freenect2)
+
   # 3D
   if (WITH_3D_RENDERER)
     # GLUT
@@ -527,7 +529,9 @@ include_directories(
   include
   ${GFLAGS_INCLUDE_DIR}
   ${GLOG_INCLUDE_DIR}
-  ${OpenCV_INCLUDE_DIRS})
+  ${OpenCV_INCLUDE_DIRS}
+  ${FREENECT2_INCLUDE_DIRS})
+  
 
 if(USE_MKL)
  include_directories(
