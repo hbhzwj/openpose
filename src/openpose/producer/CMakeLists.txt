@@ -1,6 +1,7 @@
 set(SOURCES_OP_PRODUCER
     defineTemplates.cpp
     flirReader.cpp
+    kinectReader.cpp
     imageDirectoryReader.cpp
     ipCameraReader.cpp
     producer.cpp
@@ -16,7 +17,7 @@ set(SOURCES_OPENPOSE ${SOURCES_OPENPOSE} ${SOURCES_OP_PRODUCER_WITH_CP} PARENT_S
 
 if (UNIX AND NOT APPLE)
   add_library(openpose_producer ${SOURCES_OP_PRODUCER})
-  target_link_libraries(openpose_producer ${OpenCV_LIBS} openpose_core 
+  target_link_libraries(openpose_producer ${OpenCV_LIBS} ${FREENECT2_LIBRARIES} openpose_core 
       openpose_thread openpose_filestream)
 
   install(TARGETS openpose_producer

@@ -54,6 +54,7 @@ DEFINE_string(video,                    "",             "Use a video file instea
                                                         " example video.");
 DEFINE_string(image_dir,                "",             "Process a directory of images. Use `examples/media/` for our default example folder with 20"
                                                         " images. Read all standard formats (jpg, png, bmp, etc.).");
+DEFINE_bool(kinect_camera,              false,          "Whether to use kinect as a camera");
 DEFINE_bool(flir_camera,                false,          "Whether to use FLIR (Point-Grey) stereo camera.");
 DEFINE_string(ip_camera,                "",             "String with the IP camera URL. It supports protocols like RTSP and HTTP.");
 DEFINE_uint64(frame_first,              0,              "Start on desired frame number. Indexes are 0-based, i.e. the first frame has index 0.");
@@ -245,7 +246,7 @@ int openPoseDemo()
     const auto producerSharedPtr = op::flagsToProducer(FLAGS_image_dir, FLAGS_video, FLAGS_ip_camera, FLAGS_camera,
                                                        FLAGS_flir_camera, FLAGS_camera_resolution, FLAGS_camera_fps,
                                                        FLAGS_camera_parameter_folder,
-                                                       (unsigned int) FLAGS_3d_views);
+                                                       (unsigned int) FLAGS_3d_views, FLAGS_kinect_camera);
     // poseModel
     const auto poseModel = op::flagsToPoseModel(FLAGS_model_pose);
     // JSON saving

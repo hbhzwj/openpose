@@ -1,5 +1,6 @@
 #include <cstdio> // sscanf
 #include <openpose/producer/flirReader.hpp>
+#include <openpose/producer/kinectReader.hpp>
 #include <openpose/producer/imageDirectoryReader.hpp>
 #include <openpose/producer/ipCameraReader.hpp>
 #include <openpose/producer/videoReader.hpp>
@@ -103,7 +104,7 @@ namespace op
 
     ProducerType flagsToProducerType(const std::string& imageDirectory, const std::string& videoPath,
                                      const std::string& ipCameraPath, const int webcamIndex,
-                                     const bool flirCamera)
+                                     const bool flirCamera, const bool kinectCamera)
     {
         try
         {
@@ -128,6 +129,8 @@ namespace op
                 return ProducerType::IPCamera;
             else if (flirCamera)
                 return ProducerType::FlirCamera;
+            else if (kinectCamera)
+                return ProducerType::KinectCamera;
             else
                 return ProducerType::Webcam;
         }
@@ -142,12 +145,12 @@ namespace op
                                               const std::string& ipCameraPath, const int webcamIndex,
                                               const bool flirCamera, const std::string& cameraResolution,
                                               const double webcamFps, const std::string& cameraParameterPath,
-                                              const unsigned int imageDirectoryStereo)
+                                              const unsigned int imageDirectoryStereo, const bool kinectCamera)
     {
         try
         {
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
-            const auto type = flagsToProducerType(imageDirectory, videoPath, ipCameraPath, webcamIndex, flirCamera);
+            const auto type = flagsToProducerType(imageDirectory, videoPath, ipCameraPath, webcamIndex, flirCamera, kinectCamera);
 
             if (type == ProducerType::ImageDirectory)
                 return std::make_shared<ImageDirectoryReader>(imageDirectory, imageDirectoryStereo,
@@ -162,6 +165,12 @@ namespace op
                 // cameraFrameSize
                 const auto cameraFrameSize = flagsToPoint(cameraResolution, "-1x-1");
                 return std::make_shared<FlirReader>(cameraParameterPath, cameraFrameSize);
+            }
+
+            if (type == ProducerType::KinectCamera) {
+              // cameraFrameSize
+              const auto cameraFrameSize = flagsToPoint(cameraResolution, "-1x-1");
+              return std::make_shared<KinectReader>(cameraParameterPath, cameraFrameSize);
             }
             // Webcam
             if (type == ProducerType::Webcam)

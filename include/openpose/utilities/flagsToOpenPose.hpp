@@ -18,7 +18,7 @@ namespace op
     // Determine type of frame source
     OP_API ProducerType flagsToProducerType(const std::string& imageDirectory, const std::string& videoPath,
                                             const std::string& ipCameraPath, const int webcamIndex,
-                                            const bool flirCamera);
+                                            const bool flirCamera, const bool kinectCamera);
 
     OP_API std::shared_ptr<Producer> flagsToProducer(const std::string& imageDirectory, const std::string& videoPath,
                                                      const std::string& ipCameraPath, const int webcamIndex,
@@ -26,7 +26,8 @@ namespace op
                                                      const std::string& cameraResolution = "-1x-1",
                                                      const double webcamFps = 30.,
                                                      const std::string& cameraParameterPath = "models/cameraParameters/",
-                                                     const unsigned int imageDirectoryStereo = 1);
+                                                     const unsigned int imageDirectoryStereo = 1,
+                                                     const bool kinectCamera = false);
 
     OP_API std::vector<HeatMapType> flagsToHeatMaps(const bool heatMapsAddParts = false,
                                                     const bool heatMapsAddBkg = false,
