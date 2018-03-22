@@ -314,8 +314,8 @@ namespace op
             return result;
         }
     #else
-        const std::string WITH_FLIR_CAMERA_ERROR{"OpenPose CMake must be compiled with the `WITH_FLIR_CAMERA` flag in"
-            " order to use the FLIR camera. Alternatively, disable `--flir_camera`."};
+				const std::string WITH_FLIR_CAMERA_ERROR{"OpenPose CMake must be compiled with the `WITH_FLIR_CAMERA` flag in"
+						" order to use the FLIR camera. Alternatively, disable `--flir_camera`."};
     #endif
 
     struct SpinnakerWrapper::ImplSpinnakerWrapper

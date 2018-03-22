@@ -42,7 +42,6 @@ namespace op
         void set(const int capProperty, const double value);
 
     private:
-        SpinnakerWrapper mSpinnakerWrapper;
         Point<int> mResolution;
         long long mFrameNameCounter;
 
@@ -51,8 +50,13 @@ namespace op
         std::vector<cv::Mat> getRawFrames();
 
 				libfreenect2::Freenect2 freenect2;
+        //TODO(hbhzwj): change this to unique pointer.
 				libfreenect2::Freenect2Device *dev;
 				libfreenect2::PacketPipeline *pipeline;
+        libfreenect2::Registration* registration;
+        libfreenect2::Frame undistorted, registered;
+        libfreenect2::SyncMultiFrameListener* listener;
+        libfreenect2::FrameMap frames;
 				std::string serial;
 
         DELETE_COPY(KinectReader);
