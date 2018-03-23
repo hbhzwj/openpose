@@ -301,74 +301,90 @@ public:
     }
 };
 
+using CallbackFunction = std::function<void(const std::vector<UserDatum>& arg1)>;
+
+// TODO(hbhzwj): remove this function just for test
+void TestFunction(const std::vector<UserDatum>& arg1) {
+}
+
+
+// TODO(hbhzwj): we need to let the WUserOutput to take a hook and
+// returns the same format as in `frame_data`
+// (https://github.com/hbhzwj/poscon/blob/9c17cf8f240c9e8a5bd783df44c71497b0664627/UserViewer/Viewer.cpp#L735)
+// Another approach is just move the main work here. We can pass the
+// data we got from Nite as additional data.
+// How to define a function that takes std::vector<UserDatum> as input?
 // This worker will just read and return all the jpg files in a directory
 class WUserOutput : public op::WorkerConsumer<std::shared_ptr<std::vector<UserDatum>>>
 {
 public:
+    WUserOutput(CallbackFunction callback): mCallback(callback) {}
     void initializationOnThread() {}
 
     void workConsumer(const std::shared_ptr<std::vector<UserDatum>>& datumsPtr)
     {
         try
         {
-            // User's displaying/saving/other processing here
-                // datum.cvOutputData: rendered frame with pose or heatmaps
-                // datum.poseKeypoints: Array<float> with the estimated pose
-            if (datumsPtr != nullptr && !datumsPtr->empty())
-            {
-                // Show in command line the resulting pose keypoints for body, face and hands
-                op::log("\nKeypoints:");
-                // Accesing each element of the keypoints
-                const auto& poseKeypoints = datumsPtr->at(0).poseKeypoints;
-                op::log("Person pose keypoints:");
-                for (auto person = 0 ; person < poseKeypoints.getSize(0) ; person++)
-                {
-                    op::log("Person " + std::to_string(person) + " (x, y, score):");
-                    for (auto bodyPart = 0 ; bodyPart < poseKeypoints.getSize(1) ; bodyPart++)
-                    {
-                        std::string valueToPrint;
-                        for (auto xyscore = 0 ; xyscore < poseKeypoints.getSize(2) ; xyscore++)
-                        {
-                            valueToPrint += std::to_string(   poseKeypoints[{person, bodyPart, xyscore}]   ) + " ";
-                        }
-                        op::log(valueToPrint);
-                    }
-                }
-                op::log(" ");
-                // Alternative: just getting std::string equivalent
-                op::log("Face keypoints: " + datumsPtr->at(0).faceKeypoints.toString());
-                op::log("Left hand keypoints: " + datumsPtr->at(0).handKeypoints[0].toString());
-                op::log("Right hand keypoints: " + datumsPtr->at(0).handKeypoints[1].toString());
-                // Heatmaps
-                const auto& poseHeatMaps = datumsPtr->at(0).poseHeatMaps;
-                if (!poseHeatMaps.empty())
-                {
-                    op::log("Pose heatmaps size: [" + std::to_string(poseHeatMaps.getSize(0)) + ", "
-                            + std::to_string(poseHeatMaps.getSize(1)) + ", "
-                            + std::to_string(poseHeatMaps.getSize(2)) + "]");
-                    const auto& faceHeatMaps = datumsPtr->at(0).faceHeatMaps;
-                    op::log("Face heatmaps size: [" + std::to_string(faceHeatMaps.getSize(0)) + ", "
-                            + std::to_string(faceHeatMaps.getSize(1)) + ", "
-                            + std::to_string(faceHeatMaps.getSize(2)) + ", "
-                            + std::to_string(faceHeatMaps.getSize(3)) + "]");
-                    const auto& handHeatMaps = datumsPtr->at(0).handHeatMaps;
-                    op::log("Left hand heatmaps size: [" + std::to_string(handHeatMaps[0].getSize(0)) + ", "
-                            + std::to_string(handHeatMaps[0].getSize(1)) + ", "
-                            + std::to_string(handHeatMaps[0].getSize(2)) + ", "
-                            + std::to_string(handHeatMaps[0].getSize(3)) + "]");
-                    op::log("Right hand heatmaps size: [" + std::to_string(handHeatMaps[1].getSize(0)) + ", "
-                            + std::to_string(handHeatMaps[1].getSize(1)) + ", "
-                            + std::to_string(handHeatMaps[1].getSize(2)) + ", "
-                            + std::to_string(handHeatMaps[1].getSize(3)) + "]");
-                }
-
-                // Display rendered output image
-                cv::imshow("User worker GUI", datumsPtr->at(0).cvOutputData);
-                // Display image and sleeps at least 1 ms (it usually sleeps ~5-10 msec to display the image)
-                const char key = (char)cv::waitKey(1);
-                if (key == 27)
-                    this->stop();
-            }
+            mCallback(*datumsPtr);
+            this->stop();
+//            // User's displaying/saving/other processing here
+//                // datum.cvOutputData: rendered frame with pose or heatmaps
+//                // datum.poseKeypoints: Array<float> with the estimated pose
+//            if (datumsPtr != nullptr && !datumsPtr->empty())
+//            {
+//                // Show in command line the resulting pose keypoints for body, face and hands
+//                op::log("\nKeypoints:");
+//                // Accesing each element of the keypoints
+//                const auto& poseKeypoints = datumsPtr->at(0).poseKeypoints;
+//                op::log("Person pose keypoints:");
+//                for (auto person = 0 ; person < poseKeypoints.getSize(0) ; person++)
+//                {
+//                    op::log("Person " + std::to_string(person) + " (x, y, score):");
+//                    for (auto bodyPart = 0 ; bodyPart < poseKeypoints.getSize(1) ; bodyPart++)
+//                    {
+//                        std::string valueToPrint;
+//                        for (auto xyscore = 0 ; xyscore < poseKeypoints.getSize(2) ; xyscore++)
+//                        {
+//                            valueToPrint += std::to_string(   poseKeypoints[{person, bodyPart, xyscore}]   ) + " ";
+//                        }
+//                        op::log(valueToPrint);
+//                    }
+//                }
+//                op::log(" ");
+//                // Alternative: just getting std::string equivalent
+//                op::log("Face keypoints: " + datumsPtr->at(0).faceKeypoints.toString());
+//                op::log("Left hand keypoints: " + datumsPtr->at(0).handKeypoints[0].toString());
+//                op::log("Right hand keypoints: " + datumsPtr->at(0).handKeypoints[1].toString());
+//                // Heatmaps
+//                const auto& poseHeatMaps = datumsPtr->at(0).poseHeatMaps;
+//                if (!poseHeatMaps.empty())
+//                {
+//                    op::log("Pose heatmaps size: [" + std::to_string(poseHeatMaps.getSize(0)) + ", "
+//                            + std::to_string(poseHeatMaps.getSize(1)) + ", "
+//                            + std::to_string(poseHeatMaps.getSize(2)) + "]");
+//                    const auto& faceHeatMaps = datumsPtr->at(0).faceHeatMaps;
+//                    op::log("Face heatmaps size: [" + std::to_string(faceHeatMaps.getSize(0)) + ", "
+//                            + std::to_string(faceHeatMaps.getSize(1)) + ", "
+//                            + std::to_string(faceHeatMaps.getSize(2)) + ", "
+//                            + std::to_string(faceHeatMaps.getSize(3)) + "]");
+//                    const auto& handHeatMaps = datumsPtr->at(0).handHeatMaps;
+//                    op::log("Left hand heatmaps size: [" + std::to_string(handHeatMaps[0].getSize(0)) + ", "
+//                            + std::to_string(handHeatMaps[0].getSize(1)) + ", "
+//                            + std::to_string(handHeatMaps[0].getSize(2)) + ", "
+//                            + std::to_string(handHeatMaps[0].getSize(3)) + "]");
+//                    op::log("Right hand heatmaps size: [" + std::to_string(handHeatMaps[1].getSize(0)) + ", "
+//                            + std::to_string(handHeatMaps[1].getSize(1)) + ", "
+//                            + std::to_string(handHeatMaps[1].getSize(2)) + ", "
+//                            + std::to_string(handHeatMaps[1].getSize(3)) + "]");
+//                }
+//
+//                // Display rendered output image
+//                cv::imshow("User worker GUI", datumsPtr->at(0).cvOutputData);
+//                // Display image and sleeps at least 1 ms (it usually sleeps ~5-10 msec to display the image)
+//                const char key = (char)cv::waitKey(1);
+//                if (key == 27)
+//                    this->stop();
+//            }
         }
         catch (const std::exception& e)
         {
@@ -377,6 +393,8 @@ public:
             op::error(e.what(), __LINE__, __FUNCTION__, __FILE__);
         }
     }
+protected:
+   CallbackFunction mCallback;
 };
 
 int openPoseTutorialWrapper2()
@@ -422,12 +440,13 @@ int openPoseTutorialWrapper2()
     // Initializing the user custom classes
     // Frames producer (e.g. video, webcam, ...)
     // auto wUserInput = std::make_shared<WUserInput>(FLAGS_image_dir);
+    // TODO(hbhzwj): change this to real data.
     cv::Mat test_data;
     auto wUserInput = std::make_shared<WUserInput>(std::vector<cv::Mat>(test_data));
     // Processing
     auto wUserPostProcessing = std::make_shared<WUserPostProcessing>();
     // GUI (Display)
-    auto wUserOutput = std::make_shared<WUserOutput>();
+    auto wUserOutput = std::make_shared<WUserOutput>(TestFunction);
 
     op::Wrapper<std::vector<UserDatum>> opWrapper;
     // Add custom input
