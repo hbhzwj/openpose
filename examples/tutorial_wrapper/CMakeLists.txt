@@ -1,7 +1,8 @@
 set(EXAMPLE_FILES 
     1_user_asynchronous_output.cpp
     2_user_synchronous.cpp
-    3_user_asynchronous.cpp)
+    3_user_asynchronous.cpp
+    4_library_test.cpp)
   
 include(${CMAKE_SOURCE_DIR}/cmake/Utils.cmake)
 

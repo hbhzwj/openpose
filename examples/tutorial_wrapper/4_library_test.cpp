@@ -208,14 +208,13 @@ struct UserDatum : public op::Datum
 class WUserInput : public op::WorkerProducer<std::shared_ptr<std::vector<UserDatum>>>
 {
 public:
-    WUserInput(const std::string& directoryPath) :
-        mImageFiles{op::getFilesOnDirectory(directoryPath, "jpg")},
-        // If we want "jpg" + "png" images
-        // mImageFiles{op::getFilesOnDirectory(directoryPath, std::vector<std::string>{"jpg", "png"})},
+    // cv::Mats
+    WUserInput(const std::vector<cv::Mat>& frames) :
+        mFrames{frames},
         mCounter{0}
     {
-        if (mImageFiles.empty())
-            op::error("No images found on: " + directoryPath, __LINE__, __FUNCTION__, __FILE__);
+        if (frames.empty())
+            op::error("No images found " , __LINE__, __FUNCTION__, __FILE__);
     }
 
     void initializationOnThread() {}
@@ -225,7 +224,7 @@ public:
         try
         {
             // Close program when empty frame
-            if (mImageFiles.size() <= mCounter)
+            if (mFrames.size() <= mCounter)
             {
                 op::log("Last frame read and added to queue. Closing program after it is processed.",
                         op::Priority::High);
@@ -242,12 +241,13 @@ public:
                 auto& datum = datumsPtr->at(0);
 
                 // Fill datum
-                datum.cvInputData = cv::imread(mImageFiles.at(mCounter++));
+                datum.cvInputData = mFrames[mCounter];
+                mCounter++;
 
                 // If empty frame -> return nullptr
                 if (datum.cvInputData.empty())
                 {
-                    op::log("Empty frame detected on path: " + mImageFiles.at(mCounter-1) + ". Closing program.",
+                    op::log("Empty frame detected for frame: " + std::to_string(mCounter-1) + ". Closing program.",
                         op::Priority::High);
                     this->stop();
                     datumsPtr = nullptr;
@@ -266,7 +266,7 @@ public:
     }
 
 private:
-    const std::vector<std::string> mImageFiles;
+    const std::vector<cv::Mat> mFrames;
     unsigned long long mCounter;
 };
 
@@ -421,7 +421,9 @@ int openPoseTutorialWrapper2()
 
     // Initializing the user custom classes
     // Frames producer (e.g. video, webcam, ...)
-    auto wUserInput = std::make_shared<WUserInput>(FLAGS_image_dir);
+    // auto wUserInput = std::make_shared<WUserInput>(FLAGS_image_dir);
+    cv::Mat test_data;
+    auto wUserInput = std::make_shared<WUserInput>(std::vector<cv::Mat>(test_data));
     // Processing
     auto wUserPostProcessing = std::make_shared<WUserPostProcessing>();
     // GUI (Display)
