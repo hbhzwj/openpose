@@ -397,7 +397,7 @@ protected:
    CallbackFunction mCallback;
 };
 
-int openPoseTutorialWrapper2()
+int openPoseTutorialWrapper(const std::vector<cv::Mat>& input_data, CallbackFunction callback)
 {
     // logging_level
     op::check(0 <= FLAGS_logging_level && FLAGS_logging_level <= 255, "Wrong logging_level value.",
@@ -441,12 +441,11 @@ int openPoseTutorialWrapper2()
     // Frames producer (e.g. video, webcam, ...)
     // auto wUserInput = std::make_shared<WUserInput>(FLAGS_image_dir);
     // TODO(hbhzwj): change this to real data.
-    cv::Mat test_data;
-    auto wUserInput = std::make_shared<WUserInput>(std::vector<cv::Mat>(test_data));
+    auto wUserInput = std::make_shared<WUserInput>(input_data);
     // Processing
     auto wUserPostProcessing = std::make_shared<WUserPostProcessing>();
     // GUI (Display)
-    auto wUserOutput = std::make_shared<WUserOutput>(TestFunction);
+    auto wUserOutput = std::make_shared<WUserOutput>(callback);
 
     op::Wrapper<std::vector<UserDatum>> opWrapper;
     // Add custom input
@@ -538,5 +537,6 @@ int main(int argc, char *argv[])
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
     // Running openPoseTutorialWrapper2
-    return openPoseTutorialWrapper2();
+    cv::Mat test_data;
+    return openPoseTutorialWrapper(std::vector<cv::Mat>({test_data}), TestFunction);
 }
