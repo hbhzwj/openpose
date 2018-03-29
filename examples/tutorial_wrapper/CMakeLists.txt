@@ -1,8 +1,7 @@
 set(EXAMPLE_FILES 
     1_user_asynchronous_output.cpp
     2_user_synchronous.cpp
-    3_user_asynchronous.cpp
-    4_library_test.cpp)
+    3_user_asynchronous.cpp)
   
 include(${CMAKE_SOURCE_DIR}/cmake/Utils.cmake)
 
@@ -29,4 +28,35 @@ foreach(EXAMPLE_FILE ${EXAMPLE_FILES})
     set_property(TARGET ${EXE_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_BINARY_DIR}/$(Platform)/$(Configuration))
   endif (WIN32)
 
+endforeach()
+
+
+set(EXAMPLE_LIBRARY_FILES 
+    4_wrapper_library.cpp)
+
+foreach(EXAMPLE_FILE ${EXAMPLE_LIBRARY_FILES})
+
+  get_filename_component(SOURCE_NAME ${EXAMPLE_FILE} NAME_WE)
+  
+  set(EXE_NAME "${SOURCE_NAME}")
+  message(STATUS "Adding Example ${EXE_NAME}")
+  # add_executable(${EXE_NAME} ${EXAMPLE_FILE})
+  add_library(${EXE_NAME}.so STATIC ${EXAMPLE_FILE})
+  # target_link_libraries( ${EXE_NAME} openpose ${GLOG_LIBRARY} ${GFLAGS_LIBRARY} ${Caffe_LIBS} ${MKL_LIBS} ${GLUT_LIBRARY} ${SPINNAKER_LIB} ${CMAKE_THREAD_LIBS_INIT})
+  
+endforeach()
+
+
+set(EXAMPLE_FILES 
+    4_library_test_main.cpp)
+
+foreach(EXAMPLE_FILE ${EXAMPLE_FILES})
+  get_filename_component(SOURCE_NAME ${EXAMPLE_FILE} NAME_WE)
+  
+  set(EXE_NAME "${SOURCE_NAME}.bin")
+
+  message(STATUS "Adding Example ${EXE_NAME}")
+  add_executable(${EXE_NAME} ${EXAMPLE_FILE})
+  target_link_libraries( ${EXE_NAME} lib4_wrapper_library.so.a openpose ${GLOG_LIBRARY} ${GFLAGS_LIBRARY} ${Caffe_LIBS} ${MKL_LIBS} ${GLUT_LIBRARY} ${SPINNAKER_LIB} ${CMAKE_THREAD_LIBS_INIT})
+  
 endforeach()

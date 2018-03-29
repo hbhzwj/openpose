@@ -27,6 +27,7 @@
 #endif
 // OpenPose dependencies
 #include <openpose/headers.hpp>
+#include "4_wrapper_library.hpp"
 
 // See all the available parameter options withe the `--help` flag. E.g. `build/examples/openpose/openpose.bin --help`
 // Note: This command will show you flags for other unnecessary 3rdparty files. Check only the flags for the OpenPose
@@ -188,17 +189,6 @@ DEFINE_string(write_keypoint_json,      "",             "(Deprecated, use `write
                                                         " compatible with any OpenCV version.");
 
 
-// If the user needs his own variables, he can inherit the op::Datum struct and add them
-// UserDatum can be directly used by the OpenPose wrapper because it inherits from op::Datum, just define
-// Wrapper<UserDatum> instead of Wrapper<op::Datum>
-struct UserDatum : public op::Datum
-{
-    bool boolThatUserNeedsForSomeReason;
-
-    UserDatum(const bool boolThatUserNeedsForSomeReason_ = false) :
-        boolThatUserNeedsForSomeReason{boolThatUserNeedsForSomeReason_}
-    {}
-};
 
 // The W-classes can be implemented either as a template or as simple classes given
 // that the user usually knows which kind of data he will move between the queues,
@@ -301,11 +291,6 @@ public:
     }
 };
 
-using CallbackFunction = std::function<void(const std::vector<UserDatum>& arg1)>;
-
-// TODO(hbhzwj): remove this function just for test
-void TestFunction(const std::vector<UserDatum>& arg1) {
-}
 
 
 // TODO(hbhzwj): we need to let the WUserOutput to take a hook and
@@ -531,12 +516,4 @@ int openPoseTutorialWrapper(const std::vector<cv::Mat>& input_data, CallbackFunc
     return 0;
 }
 
-int main(int argc, char *argv[])
-{
-    // Parsing command line flags
-    gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-    // Running openPoseTutorialWrapper2
-    cv::Mat test_data;
-    return openPoseTutorialWrapper(std::vector<cv::Mat>({test_data}), TestFunction);
-}
