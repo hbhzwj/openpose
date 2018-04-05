@@ -200,7 +200,7 @@ if (${GPU_MODE} MATCHES "OPENCL")
   unset(CMAKE_THREAD_LIBS_INIT CACHE)
   find_package(Threads)
 else ()
-  set(CMAKE_THREAD_LIBS_INIT "")
+  set(CMAKE_THREAD_LIBS_INIT "pthread")
 endif ()
 
 ### FIND REQUIRED PACKAGES
