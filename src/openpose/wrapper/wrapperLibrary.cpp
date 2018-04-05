@@ -27,7 +27,6 @@
 #endif
 // OpenPose dependencies
 #include <openpose/headers.hpp>
-#include "4_wrapper_library.hpp"
 
 // See all the available parameter options withe the `--help` flag. E.g. `build/examples/openpose/openpose.bin --help`
 // Note: This command will show you flags for other unnecessary 3rdparty files. Check only the flags for the OpenPose
@@ -192,10 +191,10 @@ DEFINE_string(write_keypoint_json,      "",             "(Deprecated, use `write
 
 // The W-classes can be implemented either as a template or as simple classes given
 // that the user usually knows which kind of data he will move between the queues,
-// in this case we assume a std::shared_ptr of a std::vector of UserDatum
+// in this case we assume a std::shared_ptr of a std::vector of LibraryUserDatum
 
 // This worker will just read and return all the jpg files in a directory
-class WUserInput : public op::WorkerProducer<std::shared_ptr<std::vector<UserDatum>>>
+class WUserInput : public op::WorkerProducer<std::shared_ptr<std::vector<LibraryUserDatum>>>
 {
 public:
     // cv::Mats
@@ -209,7 +208,7 @@ public:
 
     void initializationOnThread() {}
 
-    std::shared_ptr<std::vector<UserDatum>> workProducer()
+    std::shared_ptr<std::vector<LibraryUserDatum>> workProducer()
     {
         try
         {
@@ -226,7 +225,7 @@ public:
             else
             {
                 // Create new datum
-                auto datumsPtr = std::make_shared<std::vector<UserDatum>>();
+                auto datumsPtr = std::make_shared<std::vector<LibraryUserDatum>>();
                 datumsPtr->emplace_back();
                 auto& datum = datumsPtr->at(0);
 
@@ -261,7 +260,7 @@ private:
 };
 
 // This worker will just invert the image
-class WUserPostProcessing : public op::Worker<std::shared_ptr<std::vector<UserDatum>>>
+class WUserPostProcessing : public op::Worker<std::shared_ptr<std::vector<LibraryUserDatum>>>
 {
 public:
     WUserPostProcessing()
@@ -271,7 +270,7 @@ public:
 
     void initializationOnThread() {}
 
-    void work(std::shared_ptr<std::vector<UserDatum>>& datumsPtr)
+    void work(std::shared_ptr<std::vector<LibraryUserDatum>>& datumsPtr)
     {
         // User's post-processing (after OpenPose processing & before OpenPose outputs) here
             // datum.cvOutputData: rendered frame with pose or heatmaps
@@ -298,15 +297,15 @@ public:
 // (https://github.com/hbhzwj/poscon/blob/9c17cf8f240c9e8a5bd783df44c71497b0664627/UserViewer/Viewer.cpp#L735)
 // Another approach is just move the main work here. We can pass the
 // data we got from Nite as additional data.
-// How to define a function that takes std::vector<UserDatum> as input?
+// How to define a function that takes std::vector<LibraryUserDatum> as input?
 // This worker will just read and return all the jpg files in a directory
-class WUserOutput : public op::WorkerConsumer<std::shared_ptr<std::vector<UserDatum>>>
+class WUserOutput : public op::WorkerConsumer<std::shared_ptr<std::vector<LibraryUserDatum>>>
 {
 public:
     WUserOutput(CallbackFunction callback): mCallback(callback) {}
     void initializationOnThread() {}
 
-    void workConsumer(const std::shared_ptr<std::vector<UserDatum>>& datumsPtr)
+    void workConsumer(const std::shared_ptr<std::vector<LibraryUserDatum>>& datumsPtr)
     {
         try
         {
@@ -432,7 +431,7 @@ int openPoseTutorialWrapper(const std::vector<cv::Mat>& input_data, CallbackFunc
     // GUI (Display)
     auto wUserOutput = std::make_shared<WUserOutput>(callback);
 
-    op::Wrapper<std::vector<UserDatum>> opWrapper;
+    op::Wrapper<std::vector<LibraryUserDatum>> opWrapper;
     // Add custom input
     const auto workerInputOnNewThread = false;
     opWrapper.setWorkerInput(wUserInput, workerInputOnNewThread);

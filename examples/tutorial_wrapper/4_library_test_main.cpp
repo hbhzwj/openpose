@@ -10,10 +10,8 @@
 // OpenPose dependencies
 #include <openpose/headers.hpp>
 
-#include "4_wrapper_library.hpp"
-
 // TODO(hbhzwj): remove this function just for test
-void TestFunction(const std::vector<UserDatum>& arg1) {
+void TestFunction(const std::vector<LibraryUserDatum>& arg1) {
 }
 
 

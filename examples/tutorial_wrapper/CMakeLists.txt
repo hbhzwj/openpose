@@ -31,22 +31,6 @@ foreach(EXAMPLE_FILE ${EXAMPLE_FILES})
 endforeach()
 
 
-set(EXAMPLE_LIBRARY_FILES 
-    4_wrapper_library.cpp)
-
-foreach(EXAMPLE_FILE ${EXAMPLE_LIBRARY_FILES})
-
-  get_filename_component(SOURCE_NAME ${EXAMPLE_FILE} NAME_WE)
-  
-  set(EXE_NAME "${SOURCE_NAME}")
-  message(STATUS "Adding Example ${EXE_NAME}")
-  # add_executable(${EXE_NAME} ${EXAMPLE_FILE})
-  add_library(${EXE_NAME}.so STATIC ${EXAMPLE_FILE})
-  # target_link_libraries( ${EXE_NAME} openpose ${GLOG_LIBRARY} ${GFLAGS_LIBRARY} ${Caffe_LIBS} ${MKL_LIBS} ${GLUT_LIBRARY} ${SPINNAKER_LIB} ${CMAKE_THREAD_LIBS_INIT})
-  
-endforeach()
-
-
 set(EXAMPLE_FILES 
     4_library_test_main.cpp)
 
@@ -57,6 +41,6 @@ foreach(EXAMPLE_FILE ${EXAMPLE_FILES})
 
   message(STATUS "Adding Example ${EXE_NAME}")
   add_executable(${EXE_NAME} ${EXAMPLE_FILE})
-  target_link_libraries( ${EXE_NAME} lib4_wrapper_library.so.a openpose ${GLOG_LIBRARY} ${GFLAGS_LIBRARY} ${Caffe_LIBS} ${MKL_LIBS} ${GLUT_LIBRARY} ${SPINNAKER_LIB} ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries( ${EXE_NAME} openpose ${GLOG_LIBRARY} ${GFLAGS_LIBRARY} ${Caffe_LIBS} ${MKL_LIBS} ${GLUT_LIBRARY} ${SPINNAKER_LIB} ${CMAKE_THREAD_LIBS_INIT})
   
 endforeach()

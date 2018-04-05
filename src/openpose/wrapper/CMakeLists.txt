@@ -5,7 +5,8 @@ set(SOURCES_OP_WRAPPER
     wrapperStructHand.cpp
     wrapperStructInput.cpp
     wrapperStructOutput.cpp
-    wrapperStructPose.cpp)
+    wrapperStructPose.cpp
+    wrapperLibrary.cpp)
 
 include(${CMAKE_SOURCE_DIR}/cmake/Utils.cmake)
 prepend(SOURCES_OP_WRAPPER_WITH_CP ${CMAKE_CURRENT_SOURCE_DIR} ${SOURCES_OP_WRAPPER})
