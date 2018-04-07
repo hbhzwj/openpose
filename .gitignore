@@ -131,3 +131,4 @@ html/
 
 ######################### Validation Scripts & Testing #########################
 output*/
+install/**

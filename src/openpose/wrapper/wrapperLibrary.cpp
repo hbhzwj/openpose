@@ -436,20 +436,15 @@ int openPoseTutorialWrapper(const std::vector<cv::Mat>& input_data, CallbackFunc
     op::Wrapper<std::vector<LibraryUserDatum>> opWrapper;
     // Add custom input
     const auto workerInputOnNewThread = false;
-    op::log("Run to opWrapper.setWorkerInput", op::Priority::High);
     opWrapper.setWorkerInput(wUserInput, workerInputOnNewThread);
-    op::log("Run to line 440", op::Priority::High);
     // Add custom processing
     const auto workerProcessingOnNewThread = false;
     opWrapper.setWorkerPostProcessing(wUserPostProcessing, workerProcessingOnNewThread);
     // Add custom output
     const auto workerOutputOnNewThread = true;
-    op::log("Run to line 446", op::Priority::High);
     opWrapper.setWorkerOutput(wUserOutput, workerOutputOnNewThread);
-    op::log("Run to line 448", op::Priority::High);
     // Configure OpenPose
     op::log("Configuring OpenPose wrapper.", op::Priority::Low, __LINE__, __FUNCTION__, __FILE__);
-    op::log("Run to line 451", op::Priority::High);
     const op::WrapperStructPose wrapperStructPose{!FLAGS_body_disable, netInputSize, outputSize, keypointScale,
                                                   FLAGS_num_gpu, FLAGS_num_gpu_start, FLAGS_scale_number,
                                                   (float)FLAGS_scale_gap,
