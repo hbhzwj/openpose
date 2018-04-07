@@ -417,7 +417,7 @@ int openPoseTutorialWrapper(const std::vector<cv::Mat>& input_data, CallbackFunc
     // >1 camera view?
     const auto multipleView = (FLAGS_3d || FLAGS_3d_views > 1);
     // Enabling Google Logging
-    const bool enableGoogleLogging = true;
+    const bool enableGoogleLogging = false;
     // Logging
     op::log("", op::Priority::Low, __LINE__, __FUNCTION__, __FILE__);
 
