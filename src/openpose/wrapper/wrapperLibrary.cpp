@@ -222,28 +222,30 @@ public:
                 this->stop();
                 return nullptr;
             }
-            else
-            {
-                // Create new datum
-                auto datumsPtr = std::make_shared<std::vector<LibraryUserDatum>>();
-                datumsPtr->emplace_back();
-                auto& datum = datumsPtr->at(0);
 
-                // Fill datum
-                datum.cvInputData = mFrames[mCounter];
-                mCounter++;
+            // Create new datum.
+            // TODO(hbhzwj): Right now all input images are processed
+            // in the same thread, we could group the images and process
+            // each batch in one thread.
+            auto datumsPtr = std::make_shared<std::vector<LibraryUserDatum>>();
+            for (unsigned int i = 0; i < mFrames.size(); ++i) {
+              datumsPtr->emplace_back();
+              auto& datum = datumsPtr->at(i);
 
-                // If empty frame -> return nullptr
-                if (datum.cvInputData.empty())
-                {
-                    op::log("Empty frame detected for frame: " + std::to_string(mCounter-1) + ". Closing program.",
+              // Fill datum
+              datum.cvInputData = mFrames[i];
+              mCounter++;
+
+              // If empty frame -> return nullptr
+              if (datum.cvInputData.empty()) {
+                op::log("Empty frame detected for frame: " +
+                            std::to_string(mCounter - 1) + ". Closing program.",
                         op::Priority::High);
-                    this->stop();
-                    datumsPtr = nullptr;
-                }
-
-                return datumsPtr;
+                this->stop();
+                datumsPtr = nullptr;
+              }
             }
+            return datumsPtr;
         }
         catch (const std::exception& e)
         {
@@ -516,5 +518,3 @@ int openPoseTutorialWrapper(const std::vector<cv::Mat>& input_data, CallbackFunc
 
     return 0;
 }
-
-
